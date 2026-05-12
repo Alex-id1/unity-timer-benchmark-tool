@@ -36,16 +36,12 @@ public class SuiteBenchmarkRunner : BenchmarkRunnerBase {
         _ctx = ctx;
         IsRunning = true;
 
-        _curTimer = ctx.TimerFactory.Get(TimerDriver.RX);
-        BlurScreenOn(_curTimer);
-
         ctx.Runner.StartCoroutine(RunSuiteCoroutine(SuiteScenarioLibrary.GetFullMatrix()));
     }
 
     public override void Stop() {
         IsRunning = false;
         DisposeActiveTimers();
-        BlurScreenOff();
     }
 
     // -----------------------------------------

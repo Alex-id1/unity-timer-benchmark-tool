@@ -42,7 +42,6 @@ public class SingleBenchmarkRunner : BenchmarkRunnerBase {
         DisposeActiveTimers();
 
         LastResult = _ctx.Metrics.Complete();
-        BlurScreenOff();
         OnCompleted?.Invoke(LastResult);
     }
 
@@ -62,7 +61,6 @@ public class SingleBenchmarkRunner : BenchmarkRunnerBase {
         _curTimer = _ctx.TimerFactory.Get(config.TimerDriver);
 
         SpawnTimers(config, _curTimer);
-        BlurScreenOn(_curTimer);
 
         const float intervalSeconds = 0.5f;
         int numOfIntervals = (int)(config.Duration / intervalSeconds);

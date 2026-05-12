@@ -95,6 +95,7 @@ public class BenchmarkPresenter : IDisposable {
         if (singleRunning) _singleRunner.Stop();
         if (suiteRunning) _suiteRunner.Stop();
         Application.targetFrameRate = IdleFrameRate;
+        MessageBroker.Default.Publish(RxMsg.Create(RxMsgType.DO_SCREEN_BLUR_OUT));
         _benchmarkView.ShowSingleRunningState(false);
         _benchmarkView.ShowSuiteRunningState(false);
         return true;
@@ -130,12 +131,14 @@ public class BenchmarkPresenter : IDisposable {
         }
 
         Application.targetFrameRate = BenchmarkFrameRate;
+        MessageBroker.Default.Publish(RxMsg.Create(RxMsgType.DO_SCREEN_BLUR_IN, _timerFactory.Get(config.TimerDriver)));
         _benchmarkView.ShowSingleRunningState(true);
         _singleRunner.Run(Context, config);
     }
 
     private void OnSingleCompleted(BenchmarkResult result) {
         Application.targetFrameRate = IdleFrameRate;
+        MessageBroker.Default.Publish(RxMsg.Create(RxMsgType.DO_SCREEN_BLUR_OUT));
         _lastWasSuite = false;
         _benchmarkView.ShowSingleRunningState(false);
         MessageBroker.Default.Publish(RxMsg.Create(RxMsgType.CREATE_CHART, result));
@@ -155,12 +158,14 @@ public class BenchmarkPresenter : IDisposable {
         if (TryStopIfRunning()) yield break;
 
         Application.targetFrameRate = BenchmarkFrameRate;
+        MessageBroker.Default.Publish(RxMsg.Create(RxMsgType.DO_SCREEN_BLUR_IN, _timerFactory.Get(TimerDriver.RX)));
         _benchmarkView.ShowSuiteRunningState(true);
         _suiteRunner.Run(Context);
     }
 
     private void OnSuiteCompleted() {
         Application.targetFrameRate = IdleFrameRate;
+        MessageBroker.Default.Publish(RxMsg.Create(RxMsgType.DO_SCREEN_BLUR_OUT));
         _lastWasSuite = true;
         _benchmarkView.ShowSuiteRunningState(false);
         _reporterView.OpenSaveBenchmarkToFilePopup(closeMoveTime, 0.5f);

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UniRx;
 
 /// <summary>
 /// Shared execution logic for all benchmark runners.
@@ -38,14 +37,6 @@ public abstract class BenchmarkRunnerBase : IBenchmarkRunner {
         foreach (var d in _activeTimers) d?.Dispose();
         _activeTimers.Clear();
     }
-
-    // -----------------------------------------
-    //  Messaging
-    // -----------------------------------------
-    protected void BlurScreenOn(ITimer timer) => Publish(RxMsg.Create(RxMsgType.DO_SCREEN_BLUR_IN, timer));
-    protected void BlurScreenOff() => Publish(RxMsg.Create(RxMsgType.DO_SCREEN_BLUR_OUT));
-    protected void ShowPopup(string text) => Publish(RxMsg.Create(RxMsgType.SHOW_POPUP, text));
-    protected void Publish(RxMsg msg) => MessageBroker.Default.Publish(msg);
 
     // -----------------------------------------
     //  Lifecycle
