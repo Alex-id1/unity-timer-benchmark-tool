@@ -1,0 +1,31 @@
+# Unity generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Bb]uild/
+[Bb]uilds/
+[Uu]ser[Ss]ettings/
+
+# Visual Studio / Rider
+.vs/
+*.csproj
+*.sln
+*.suo
+*.user
+*.pidb
+*.booproj
+ExportedObj/
+.consulo/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# JetBrains Rider
+.idea/
+*.iml
+
+# Crash reports
+sysinfo.txt
+crashlytics-build.properties

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__filesystem__directory_tree",
+      "mcp__filesystem__read_text_file",
+      "Bash(identify \"/d/ATLStudio_WebSite/assets/BurgerStreet/\"*)",
+      "Bash(file \"/d/ATLStudio_WebSite/assets/BurgerStreet/\"*)",
+      "Bash(grep \"/\\\\*\\\\|//\")",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "WebFetch(domain:play.google.com)",
+      "Bash(ls \"C:\\\\Users\\\\Dev\\\\.claude\")",
+      "Bash(mkdir \"C:\\\\Users\\\\Dev\\\\.claude\\\\skills\" 2>/dev/null; echo done)",
+      "WebFetch(domain:claude.ai)",
+      "Bash(gh repo *)",
+      "PowerShell(gh --version)",
+      "PowerShell(Get-Content \"$env:APPDATA\\\\Claude\\\\claude_desktop_config.json\")"
+    ]
+  }
+}
