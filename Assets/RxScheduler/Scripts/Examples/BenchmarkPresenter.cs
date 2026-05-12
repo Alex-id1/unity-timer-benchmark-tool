@@ -158,7 +158,7 @@ public class BenchmarkPresenter : IDisposable {
         if (TryStopIfRunning()) yield break;
 
         Application.targetFrameRate = BenchmarkFrameRate;
-        MessageBroker.Default.Publish(RxMsg.Create(RxMsgType.DO_SCREEN_BLUR_IN, _timerFactory.Get(TimerDriver.RX)));
+        MessageBroker.Default.Publish(RxMsg.Create(RxMsgType.DO_SCREEN_BLUR_IN, _timerFactory.Get(TimerDriver.UPDATE)));
         _benchmarkView.ShowSuiteRunningState(true);
         _suiteRunner.Run(Context);
     }
