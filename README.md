@@ -38,7 +38,7 @@ The project follows the **MVP** (Model-View-Presenter) pattern: views are passiv
 
 **`BenchmarkRunnerBase` - Template Method.** Shared logic (timer spawning, disposal, FPS cache) is extracted to a base class. `SingleBenchmarkRunner` and `SuiteBenchmarkRunner` implement only their execution strategy, with no knowledge of the UI.
 
-**Events - two levels of coupling.** Direct C# events (`OnCompleted`, `OnFpsUpdated`) are used where the relationship between components is clear and justified. `MessageBroker` (UniRx) is reserved for truly decoupled events: blur overlay, popups, chart creation. Blur control is intentionally kept in the presenter rather than in runners - visual feedback is not the runner's responsibility.
+**Events - two levels of coupling.** Direct C# events (`OnCompleted`, `OnFpsUpdated`) are used where the relationship between components is clear and justified. `MessageBroker (UniRx) is used selectively — only for events between components that have no reason to know about each other (blur, popup, chart creation).
 
 **`UpdateTimerRunner` + `ITimerTask`.** Update-loop timers avoid coroutine overhead by maintaining a flat `List<ITimerTask>` ticked every frame. New tasks are buffered in a pending list to avoid modifying the active list mid-iteration.
 
