@@ -30,6 +30,8 @@ public class BenchmarkPresenter : IDisposable {
 
     private const float FpsInterval = 0.25f;
     private const float closeMoveTime = 0.3f;
+    private const int IdleFrameRate = 30;
+    private const int BenchmarkFrameRate = -1;
 
     private const string ConfigNullErrorStr = "StartBenchmark: config is null";
     private const string SelectMetricStr = "Please select at least one metric";
@@ -56,6 +58,7 @@ public class BenchmarkPresenter : IDisposable {
         _singleRunner = new SingleBenchmarkRunner();
         _suiteRunner = new SuiteBenchmarkRunner();
 
+        Application.targetFrameRate = IdleFrameRate;
         InitFpsTimer(TimerDriver.RX);
 
         BenchmarkView.OnRunSingleBtnPressed += OnRunSingleClicked;
@@ -91,6 +94,7 @@ public class BenchmarkPresenter : IDisposable {
 
         if (singleRunning) _singleRunner.Stop();
         if (suiteRunning) _suiteRunner.Stop();
+        Application.targetFrameRate = IdleFrameRate;
         _benchmarkView.ShowSingleRunningState(false);
         _benchmarkView.ShowSuiteRunningState(false);
         return true;
@@ -125,11 +129,13 @@ public class BenchmarkPresenter : IDisposable {
             ShowPopupWithHighlight(SetIntervalsNumStr, PopupMsgType.ERROR_ZERO_INTERVAL_NUMBER); yield break;
         }
 
+        Application.targetFrameRate = BenchmarkFrameRate;
         _benchmarkView.ShowSingleRunningState(true);
         _singleRunner.Run(Context, config);
     }
 
     private void OnSingleCompleted(BenchmarkResult result) {
+        Application.targetFrameRate = IdleFrameRate;
         _lastWasSuite = false;
         _benchmarkView.ShowSingleRunningState(false);
         MessageBroker.Default.Publish(RxMsg.Create(RxMsgType.CREATE_CHART, result));
@@ -148,11 +154,13 @@ public class BenchmarkPresenter : IDisposable {
 
         if (TryStopIfRunning()) yield break;
 
+        Application.targetFrameRate = BenchmarkFrameRate;
         _benchmarkView.ShowSuiteRunningState(true);
         _suiteRunner.Run(Context);
     }
 
     private void OnSuiteCompleted() {
+        Application.targetFrameRate = IdleFrameRate;
         _lastWasSuite = true;
         _benchmarkView.ShowSuiteRunningState(false);
         _reporterView.OpenSaveBenchmarkToFilePopup(closeMoveTime, 0.5f);
