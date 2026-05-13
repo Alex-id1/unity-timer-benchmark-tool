@@ -2,6 +2,8 @@
 
 # Unity Timer Benchmark Tool
 
+> Unity IL2CPP standalone performance analysis tool for timer implementations
+
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![Unity](https://img.shields.io/badge/Unity-2022.3-black)
 ![IL2CPP](https://img.shields.io/badge/build-IL2CPP-orange)
@@ -14,6 +16,10 @@
 | Main UI | Results |
 |---|---|
 | ![Main UI](docs/ss1.png) | ![Results](docs/ss2.png) |
+
+---
+
+A Unity benchmarking tool for profiling timer implementations, GC allocations, and runtime overhead under controlled workloads.
 
 ---
 
@@ -30,17 +36,56 @@ Benchmark results are available at [unity-timer-benchmark](https://github.com/Al
 
 ---
 
+## Technical Focus
+
+- High-frequency timer benchmarking
+- GC allocation tracking
+- Multi-scenario workload simulation
+- Statistical sampling (Mean, StdDev, Median, P95)
+- Decoupled benchmark pipeline
+- Reactive UI updates via UniRx
+- Composition Root / DI-based architecture
+
+---
+
 ## Architecture
+
+```mermaid
+graph TD
+    AppInstaller --> BenchmarkPresenter
+    AppInstaller --> BenchmarkView
+    AppInstaller --> MetricsCollector
+    AppInstaller --> ITimerFactory
+
+    BenchmarkPresenter --> SingleBenchmarkRunner
+    BenchmarkPresenter --> SuiteBenchmarkRunner
+    BenchmarkPresenter --> BenchmarkView
+    BenchmarkPresenter --> ReporterView
+    BenchmarkPresenter --> MessageBroker
+
+    SingleBenchmarkRunner --> ITimerFactory
+    SingleBenchmarkRunner --> MetricsCollector
+    SuiteBenchmarkRunner --> ITimerFactory
+    SuiteBenchmarkRunner --> MetricsCollector
+
+    ITimerFactory --> RxTimer
+    ITimerFactory --> CoroutineTimer
+    ITimerFactory --> UpdateTimer
+
+    MessageBroker --> BlurScreenView
+    MessageBroker --> PopupView
+    MessageBroker --> ChartView
+```
 
 The project follows the **MVP** (Model-View-Presenter) pattern: views are passive and contain no logic, `BenchmarkPresenter` is the sole orchestrator - it owns all services, subscribes to view events and manages the runner lifecycle.
 
-**AppInstaller** acts as a Composition Root for DI (Dependency Injection) — the single place where all dependencies are created and wired together.
+**AppInstaller** acts as a Composition Root for DI (Dependency Injection) - the single place where all dependencies are created and wired together.
 
 **`ITimer` / `ITimerFactory` - Strategy.** All three implementations are hidden behind a single interface. Benchmark code has no knowledge of which driver it works with: swapping RX -> Coroutine -> Update requires zero changes in runner code. The factory creates the required implementation by `TimerDriver` enum.
 
 **`BenchmarkRunnerBase` - Template Method.** Shared logic (timer spawning, disposal, FPS cache) is extracted to a base class. `SingleBenchmarkRunner` and `SuiteBenchmarkRunner` implement only their execution strategy, with no knowledge of the UI.
 
-**Events - two levels of coupling.** Direct C# events (`OnCompleted`, `OnFpsUpdated`) are used where the relationship between components is clear and justified. `MessageBroker (UniRx) is used selectively — only for events between components that have no reason to know about each other (blur, popup, chart creation).
+**Events - two levels of coupling.** Direct C# events (`OnCompleted`, `OnFpsUpdated`) are used where the relationship between components is clear and justified. `MessageBroker` (UniRx) is used selectively - only for events between components that have no reason to know about each other (blur, popup, chart creation).
 
 **`UpdateTimerRunner` + `ITimerTask`.** Update-loop timers avoid coroutine overhead by maintaining a flat `List<ITimerTask>` ticked every frame. New tasks are buffered in a pending list to avoid modifying the active list mid-iteration.
 
@@ -54,6 +99,12 @@ The project follows the **MVP** (Model-View-Presenter) pattern: views are passiv
 - **CPU** - `ProfilerRecorder` Main Thread in nanoseconds
 
 Collection follows the `Begin() -> Tick() x N -> Complete()` pattern, producing a `MetricsSample[]` with full statistics (Mean, StdDev, Min, Max, Median, P95).
+
+---
+
+## Why Not UniRx Timers Everywhere?
+
+UniRx `Observable.Timer` / `Observable.Interval` are convenient but create observable chains and subscriptions that generate GC allocations on each firing. At scale (500-1000 concurrent timers) this becomes measurable. Coroutine and Update-loop implementations avoid this overhead - the benchmark exists to quantify the difference.
 
 ---
 
