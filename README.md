@@ -47,30 +47,58 @@ Benchmark results are available at [unity-timer-benchmark](https://github.com/Al
 ## Architecture
 
 ```mermaid
-graph TD
-    AppInstaller --> BenchmarkPresenter
-    AppInstaller --> BenchmarkView
-    AppInstaller --> MetricsCollector
-    AppInstaller --> ITimerFactory
+graph LR
+    AppInstaller["🔧 AppInstaller\n(Composition Root)"]
 
-    BenchmarkPresenter --> SingleBenchmarkRunner
-    BenchmarkPresenter --> SuiteBenchmarkRunner
-    BenchmarkPresenter --> BenchmarkView
-    BenchmarkPresenter --> ReporterView
-    BenchmarkPresenter --> MessageBroker
+    subgraph Presentation
+        BP["BenchmarkPresenter\n(Orchestrator)"]
+        BV["BenchmarkView"]
+        RV["ReporterView"]
+    end
 
-    SingleBenchmarkRunner --> ITimerFactory
-    SingleBenchmarkRunner --> MetricsCollector
-    SuiteBenchmarkRunner --> ITimerFactory
-    SuiteBenchmarkRunner --> MetricsCollector
+    subgraph Runners
+        SR["SingleBenchmarkRunner"]
+        SuR["SuiteBenchmarkRunner"]
+    end
 
-    ITimerFactory --> RxTimer
-    ITimerFactory --> CoroutineTimer
-    ITimerFactory --> UpdateTimer
+    subgraph Timers
+        ITF["ITimerFactory"]
+        RX["RxTimer"]
+        CO["CoroutineTimer"]
+        UP["UpdateTimer"]
+    end
 
-    MessageBroker --> BlurScreenView
-    MessageBroker --> PopupView
-    MessageBroker --> ChartView
+    subgraph Metrics
+        MC["MetricsCollector"]
+    end
+
+    subgraph Views["Decoupled Views (MessageBroker)"]
+        BSV["BlurScreenView"]
+        PV["PopupView"]
+        CV["ChartView"]
+    end
+
+    AppInstaller --> BP
+    AppInstaller --> BV
+    AppInstaller --> ITF
+    AppInstaller --> MC
+
+    BP --> SR
+    BP --> SuR
+    BP --> BV
+    BP --> RV
+    BP -->|publish| BSV
+    BP -->|publish| PV
+    BP -->|publish| CV
+
+    SR --> ITF
+    SR --> MC
+    SuR --> ITF
+    SuR --> MC
+
+    ITF --> RX
+    ITF --> CO
+    ITF --> UP
 ```
 
 The project follows the **MVP** (Model-View-Presenter) pattern: views are passive and contain no logic, `BenchmarkPresenter` is the sole orchestrator - it owns all services, subscribes to view events and manages the runner lifecycle.
