@@ -32,7 +32,9 @@ Benchmark results are available at [unity-timer-benchmark](https://github.com/Al
 
 ## Architecture
 
-The project follows the **MVP** (Model-View-Presenter) pattern: views are passive and contain no logic, `BenchmarkPresenter` is the sole orchestrator - it owns all services, subscribes to view events and manages the runner lifecycle. `AppInstaller` acts as a **Composition Root** - the single place where all dependencies are created and wired together.
+The project follows the **MVP** (Model-View-Presenter) pattern: views are passive and contain no logic, `BenchmarkPresenter` is the sole orchestrator - it owns all services, subscribes to view events and manages the runner lifecycle.
+
+**AppInstaller** acts as a Composition Root for DI (Dependency Injection) — the single place where all dependencies are created and wired together.
 
 **`ITimer` / `ITimerFactory` - Strategy.** All three implementations are hidden behind a single interface. Benchmark code has no knowledge of which driver it works with: swapping RX -> Coroutine -> Update requires zero changes in runner code. The factory creates the required implementation by `TimerDriver` enum.
 
