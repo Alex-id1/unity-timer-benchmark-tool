@@ -2,7 +2,7 @@
 
 # Unity Timer Benchmark Tool
 
-> Unity IL2CPP standalone performance analysis tool for timer implementations
+> A Unity benchmarking and performance analysis tool (IL2CPP standalone) for profiling timer implementations, GC allocations, and runtime overhead under controlled workloads
 
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![Unity](https://img.shields.io/badge/Unity-2022.3-black)
@@ -16,10 +16,6 @@
 | Main UI | Results |
 |---|---|
 | ![Main UI](docs/ss1.png) | ![Results](docs/ss2.png) |
-
----
-
-A Unity benchmarking tool for profiling timer implementations, GC allocations, and runtime overhead under controlled workloads.
 
 ---
 
