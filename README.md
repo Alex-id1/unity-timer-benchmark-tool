@@ -46,60 +46,7 @@ Benchmark results are available at [unity-timer-benchmark](https://github.com/Al
 
 ## Architecture
 
-```mermaid
-graph LR
-    AppInstaller["🔧 AppInstaller\n(Composition Root)"]
-
-    subgraph Presentation
-        BP["BenchmarkPresenter\n(Orchestrator)"]
-        BV["BenchmarkView"]
-        RV["ReporterView"]
-    end
-
-    subgraph Runners
-        SR["SingleBenchmarkRunner"]
-        SuR["SuiteBenchmarkRunner"]
-    end
-
-    subgraph Timers
-        ITF["ITimerFactory"]
-        RX["RxTimer"]
-        CO["CoroutineTimer"]
-        UP["UpdateTimer"]
-    end
-
-    subgraph Metrics
-        MC["MetricsCollector"]
-    end
-
-    subgraph Views["Decoupled Views (MessageBroker)"]
-        BSV["BlurScreenView"]
-        PV["PopupView"]
-        CV["ChartView"]
-    end
-
-    AppInstaller --> BP
-    AppInstaller --> BV
-    AppInstaller --> ITF
-    AppInstaller --> MC
-
-    BP --> SR
-    BP --> SuR
-    BP --> BV
-    BP --> RV
-    BP -->|publish| BSV
-    BP -->|publish| PV
-    BP -->|publish| CV
-
-    SR --> ITF
-    SR --> MC
-    SuR --> ITF
-    SuR --> MC
-
-    ITF --> RX
-    ITF --> CO
-    ITF --> UP
-```
+![Architecture](docs/architecture.png)
 
 The project follows the **MVP** (Model-View-Presenter) pattern: views are passive and contain no logic, `BenchmarkPresenter` is the sole orchestrator - it owns all services, subscribes to view events and manages the runner lifecycle.
 
